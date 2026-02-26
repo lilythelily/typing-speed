@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- displays site properly based on user's device -->
+
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="./assets/images/favicon-32x32.png"
+    />
+
+    <title>Frontend Mentor | Typing Speed Test</title>
+
+    <style>
+      .attribution {
+        font-size: 11px;
+        text-align: center;
+      }
+      .attribution a {
+        color: hsl(228, 45%, 44%);
+      }
+    </style>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <main>
+      <header>
+        <picture class="header-logo">
+          <source media="(min-width:800px)" srcset="./assets/images/logo-large.svg">
+          <source media="(min-width: 320px)" srcset="./assets/images/logo-small.svg">
+          <img src="./assets/images/logo-large.svg" alt="logo">
+        </picture>
+
+        <div class="header-score">
+          <div class="score-img"></div>
+          <div class="title-wpm">
+            <p class="score-title">Personal best:</p>
+            <p class="score-title-mobile">Best:</p>
+            <p class="score-wpm">92 WPM</p>
+          </div>
+        </div>
+      </header>
+
+      <section class="section__menu-container">
+        <!-- === Menu Bar: left === -->
+        <div class="menu-section">
+          <!-- === WPM === -->
+          <div class="menu-tab">
+            <p class="tab-title">WPM:</p>
+            <p class="tab-score wpm-score">0</p>
+          </div>
+
+          <!-- === Accuracy === -->
+          <div class="menu-tab">
+            <p class="tab-title">Accuracy:</p>
+            <p class="tab-score accuracy-score">100%</p>
+          </div>
+
+          <!-- === Time === -->
+          <div class="menu-tab last-tab"">
+            <p class="tab-title">Time:</p>
+            <p class="tab-score time-score">0:60</p>
+          </div>
+        </div>
+
+        <!-- === Menu Bar: right === -->
+
+        <div class="menu-section menu-right">
+          <!-- === Difficulty === -->
+          <div class="menu-tab">
+            <p class="tab-title-small">Difficulty:</p>
+            <div class="chips-container">
+              <p class="chip-item">Easy</p>
+              <p class="chip-item">Medium</p>
+              <p class="chip-item chip-blue">Hard</p>
+            </div>
+          </div>
+
+          <!-- === Mode === -->
+          <div class="menu-tab last-tab">
+            <p class="tab-title-small">Mode:</p>
+            <div class="chips-container">
+              <p class="chip-item chip-blue">Timed (60s)</p>
+              <p class="chip-item">Passage</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- === Mobile Menu Bar === -->
+      <div class="dropdown-menu">
+        <select name="difficulty" id="difficulty-select">
+          <option value="easy">
+
+            Easy
+          </option>
+          <option value="medium">
+
+            Medium
+          </option>
+          <option value="hard">
+
+            Hard
+          </option>
+        </select>
+
+        <select name="timed" id="timed-select">
+          <option value="timed-60s">
+            Timed (60s)
+          </option>
+          <option value="passage">
+
+            Passage
+          </option>
+        </select>
+      </div>
+
+      <!-- === typing section === -->
+
+      <section class="section__typing">
+        <div class="btn-text">
+          <button type="button" class="start-btn">Start Typing Test</button>
+          <div class="start-text">Or click the text and start typing</div>
+        </div>
+
+        <div class="typing-text blur-text">
+          The novelist's prose style—elliptical, fragmented, punctuated by
+          abrupt temporal shifts—reflected her thematic preoccupations: memory's
+          unreliability, identity's fluidity, the impossibility of objective
+          narration. \"Every story,\" she declared in an interview, \"is
+          simultaneously true and false; it reveals by concealing, illuminates
+          by casting shadows.\" Critics accused her of obscurantism; she
+          responded that clarity itself can be a form of deception.
+        </div>
+      </section>
+
+<hr class="hide">
+      <!-- === Restart Button === -->
+      <button type="button" class="restart-btn hide">
+        Restart Test
+        <img src="./assets/images/icon-restart.svg" alt="restart" />
+      </button>
+
+      <!-- 📌Test Complete Start -->
+
+      <section class="section__complete hide">
+        <div class="check-circle"></div>
+        <div class="high-score-mark hide"></div>
+        <h1>Test Complete!</h1>
+        <h2>Solid run. Keep pushing to beat your high score.</h2>
+
+        <div class="score-cards">
+          <!-- === WPM card === -->
+          <div class="card">
+            <p class="card-title">WPM:</p>
+            <p class="card-score">85</p>
+          </div>
+
+          <!-- === Accuracy card === -->
+          <div class="card">
+            <p class="card-title">Accuracy:</p>
+            <p class="card-score card-accuracy-score">90%</p>
+          </div>
+
+          <!-- === Character card === -->
+          <div class="card">
+            <p class="card-title">Characters:</p>
+            <p class="card-score card-characters-score">
+              120<span class="span-gray"> /</span
+              ><span class="span-red">5</span>
+            </p>
+          </div>
+        </div>
+
+        <button type="button" class="variable-btn">
+          Go Again
+          <img src="./assets/images/icon-restart-gray.svg" alt="restart" />
+        </button>
+      </section>
+
+      <!-- Test Complete End -->
+    </main>
+    <footer class="attribution">
+      Challenge by
+      <a href="https://www.frontendmentor.io?ref=challenge">Frontend Mentor</a>.
+      Coded by KA.
+    </footer>
+  </body>
+</html>
