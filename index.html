@@ -84,7 +84,7 @@
             <p class="tab-title-small">Mode:</p>
             <div class="chips-container">
               <p class="chip-item chip-blue">Timed (60s)</p>
-              <p class="chip-item">Passage</p>
+              <p class="chip-item chip-passage" >Passage</p>
             </div>
           </div>
         </div>
@@ -107,7 +107,7 @@
           </option>
         </select>
 
-        <select name="timed" id="timed-select">
+        <select name="timed" id="timed-select" >
           <option value="timed-60s">
             Timed (60s)
           </option>
@@ -121,22 +121,17 @@
       <!-- === typing section === -->
 
       <section class="section__typing">
-        <div class="btn-text">
+        <div class="btn-text flex">
           <button type="button" class="start-btn">Start Typing Test</button>
-          <div class="start-text">Or click the text and start typing</div>
-        </div>
+          <div class="start-text">Or click the text and start typing</div></div>
 
         <div class="typing-text blur-text">
-          The novelist's prose style—elliptical, fragmented, punctuated by
-          abrupt temporal shifts—reflected her thematic preoccupations: memory's
-          unreliability, identity's fluidity, the impossibility of objective
-          narration. \"Every story,\" she declared in an interview, \"is
-          simultaneously true and false; it reveals by concealing, illuminates
-          by casting shadows.\" Critics accused her of obscurantism; she
-          responded that clarity itself can be a form of deception.
         </div>
+        <!-- <textarea></textarea> -->
+        <div class="input-container" contenteditable="true"></div>
       </section>
 
+<div class="error-modal hide"><div class="error-close"></div>Oops, something is wrong... Try again later!
 <hr class="hide">
       <!-- === Restart Button === -->
       <button type="button" class="restart-btn hide">
@@ -183,10 +178,11 @@
 
       <!-- Test Complete End -->
     </main>
-    <footer class="attribution">
+    <footer class="attribution hide">
       Challenge by
       <a href="https://www.frontendmentor.io?ref=challenge">Frontend Mentor</a>.
       Coded by KA.
     </footer>
+    <script src="./main.js"></script>
   </body>
 </html>
