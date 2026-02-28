@@ -1,12 +1,55 @@
 "use strict";
 
+// === select difficulty ===
+
+const chipBtn = document.querySelectorAll(".difficulty");
+const [easy, medium, hard] = chipBtn;
+
+function selected(chip) {
+  chip.classList.add("selected");
+}
+function unselected(chip) {
+  chip.classList.remove("selected");
+}
+chipBtn.forEach((btn) => {
+  btn.addEventListener("click", (e) => {
+    if (e.target == easy) {
+      selected(easy);
+      unselected(medium);
+      unselected(hard);
+    } else if (e.target == medium) {
+      selected(medium);
+      unselected(easy);
+      unselected(hard);
+    } else {
+      selected(hard);
+      unselected(easy);
+      unselected(medium);
+    }
+  });
+});
+
+// === select mode ===
+const modeBtn = document.querySelectorAll(".mode");
+const [timed, passage] = modeBtn;
+
+modeBtn.forEach((btn) => {
+  btn.addEventListener("click", (e) => {
+    if (e.target == timed) {
+      selected(timed);
+      unselected(passage);
+    } else {
+      selected(passage);
+      unselected(timed);
+    }
+  });
+});
+
 // === start control ===
 
 const startBtn = document.querySelector(".start-btn");
 const typingContainer = document.querySelector(".typing-text");
 const btnText = document.querySelector(".btn-text");
-const passageBtn = document.querySelector(".chip-passage");
-const dropdownSelect = document.querySelector("#timed-select");
 const hr = document.querySelector("hr");
 const restartBtn = document.querySelector(".restart-btn");
 
@@ -26,13 +69,9 @@ function ready() {
   toggleHide(hr);
 }
 
-startBtn.addEventListener("click", ready);
-passageBtn.addEventListener("click", ready);
-dropdownSelect.addEventListener("change", ready);
+btnText.addEventListener("click", ready);
 
 // === fetch JSON data ===
-
-
 
 async function fetchData() {
   try {
@@ -43,10 +82,21 @@ async function fetchData() {
     const data = await response.json();
     const randomNumber = Math.floor(Math.random() * 11);
     const easyText = data.easy[`${randomNumber}`].text;
-    typingContainer.innerHTML = easyText;
-
     const mediumText = data.medium[`${randomNumber}`].text;
     const hardText = data.hard[`${randomNumber}`].text;
+
+    function content() {
+      if (easy.classList.contains("selected")) {
+        typingContainer.innerHTML = easyText;
+      } else if (medium.classList.contains("selected")) {
+        typingContainer.innerHTML = mediumText;
+      } else if (hard.classList.contains("selected")) {
+        typingContainer.innerHTML = hardText;
+      } else {
+        typingContainer.innerHTML = easyText;
+      }
+    }
+    content();
   } catch (error) {
     console.error("Error:", error);
     toggleHide(errorModal);
@@ -57,35 +107,39 @@ async function fetchData() {
 const errorModal = document.querySelector(".error-modal");
 const errorClose = document.querySelector(".error-close");
 errorClose.addEventListener("click", () => {
-  errorModal.classList.add('hide');
+  errorModal.classList.add("hide");
 });
 
 fetchData();
 
-
-// 🔧 START FROM HERE ====
 //  === compare sample vs input text===
 
 const inputContainer = document.querySelector(".input-container");
 
 inputContainer.addEventListener("input", () => {
   const sampleArray = typingContainer.textContent.split("");
-  const inputArray = inputContainer.textContent.split("");
-  // let spanInput = sampleArray
-  //   .map((char, index) => {
-  //     if (inputArray[index] !== char) {
-  //       return `<span class='red-text'>${inputArray[index]}</span>`;
-  //     } else {
-  //       return `<span class='green-text'>${inputArray[index]}</span>`;
-  //     }
-  //   })
-  //   .join("");
+  const inputArray = inputContainer.value.split("");
 
-  inputArray.map((char, index) => {
-    if (sampleArray[index] !== char) {
-      inputArray[2].classList.add("error-text");
-    } else {
-      return `<span class='success-text'>${char}</span>`;
-    }
-  });
+  let cursorAdded = false;
+
+  let testInput = sampleArray
+    .map((char, index) => {
+      if (inputArray[index] === undefined && !cursorAdded) {
+        cursorAdded = true;
+        return `<span class="default-text text-cursor">${char}</span>`;
+      } else if (char == inputArray[index]) {
+        return `<span class="success-text">${char}</span>`;
+      } else if (inputArray[index] === undefined) {
+        return `<span class="default-text">${char}</span>`;
+      } else {
+        return `<span class="error-text">${char}</span>`;
+      }
+    })
+    .join("");
+
+  if (!cursorAdded) {
+    testInput + -`<span class="text-cursor"></span>`;
+  }
+
+  typingContainer.innerHTML = testInput;
 });
