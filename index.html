@@ -46,15 +46,15 @@
 
       <section class="section__menu-container">
         <!-- === Menu Bar: left === -->
-        <div class="menu-section">
+        <div class="menu-section menu-left">
           <!-- === WPM === -->
-          <div class="menu-tab">
+          <div class="menu-tab pad-right">
             <p class="tab-title">WPM:</p>
             <p class="tab-score wpm-score">0</p>
           </div>
 
           <!-- === Accuracy === -->
-          <div class="menu-tab">
+          <div class="menu-tab pad-right">
             <p class="tab-title">Accuracy:</p>
             <p class="tab-score accuracy-score">100%</p>
           </div>
@@ -62,7 +62,7 @@
           <!-- === Time === -->
           <div class="menu-tab last-tab"">
             <p class="tab-title">Time:</p>
-            <p class="tab-score time-score">0:60</p>
+            <p class="tab-score time-count">0:00</p>
           </div>
         </div>
 
@@ -70,10 +70,10 @@
 
         <div class="menu-section menu-right">
           <!-- === Difficulty === -->
-          <div class="menu-tab">
+          <div class="menu-tab pad-right">
             <p class="tab-title-small">Difficulty:</p>
             <div class="chips-container">
-              <p class="chip-item difficulty">Easy</p>
+              <p class="chip-item difficulty selected">Easy</p>
               <p class="chip-item difficulty">Medium</p>
               <p class="chip-item difficulty">Hard</p>
             </div>
@@ -83,7 +83,7 @@
           <div class="menu-tab last-tab">
             <p class="tab-title-small">Mode:</p>
             <div class="chips-container">
-              <p class="chip-item mode">Timed (60s)</p>
+              <p class="chip-item mode selected">Timed (60s)</p>
               <p class="chip-item mode" >Passage</p>
             </div>
           </div>
@@ -133,11 +133,15 @@
 
 <div class="error-modal hide"><div class="error-close"></div>Oops, something is wrong... Try again later!</div>
 <hr class="hide"></hr>
+
+<div class="btns hide">
+<!-- === Stop Timer === -->
+        <button type = "button" class="stop-timer ">Stop Timer</button>
       <!-- === Restart Button === -->
-      <button type="button" class="restart-btn hide">
+      <button type="button" class="restart-btn">
         Restart Test
         <img src="./assets/images/icon-restart.svg" alt="restart" />
-      </button>
+      </button></div>
 
       <!-- 📌Test Complete Start -->
 
@@ -169,6 +173,7 @@
             </p>
           </div>
         </div>
+
 
         <button type="button" class="variable-btn">
           Go Again
