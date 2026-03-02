@@ -39,7 +39,7 @@
           <div class="title-wpm">
             <p class="score-title">Personal best:</p>
             <p class="score-title-mobile">Best:</p>
-            <p class="score-wpm">92 WPM</p>
+            <p class="score-wpm"></p>
           </div>
         </div>
       </header>
@@ -141,11 +141,15 @@
       <button type="button" class="restart-btn">
         Restart Test
         <img src="./assets/images/icon-restart.svg" alt="restart" />
-      </button></div>
+      </button>
+    
+      <!-- === View Results === -->
+        <button type = "button" class="stop-timer" id="results-btn">View Results</button>
+    </div>
 
       <!-- 📌Test Complete Start -->
 
-      <section class="section__complete hide">
+      <section class="section__complete">
         <div class="check-circle"></div>
         <div class="high-score-mark hide"></div>
         <h1>Test Complete!</h1>
@@ -155,21 +159,21 @@
           <!-- === WPM card === -->
           <div class="card">
             <p class="card-title">WPM:</p>
-            <p class="card-score">85</p>
+            <p class="card-score card-wpm-score"></p>
           </div>
 
           <!-- === Accuracy card === -->
           <div class="card">
             <p class="card-title">Accuracy:</p>
-            <p class="card-score card-accuracy-score">90%</p>
+            <p class="card-score card-accuracy-score"></p>
           </div>
 
           <!-- === Character card === -->
           <div class="card">
             <p class="card-title">Characters:</p>
-            <p class="card-score card-characters-score">
-              120<span class="span-gray"> /</span
-              ><span class="span-red">5</span>
+            <p class="card-score card-characters-score" id="card-correct-char">
+              <span class="span-gray"> /</span
+              ><span class="span-red" id="card-wrong-char"></span>
             </p>
           </div>
         </div>

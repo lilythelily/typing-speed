@@ -54,26 +54,60 @@ const btnText = document.querySelector(".btn-text");
 const hr = document.querySelector("hr");
 const btns = document.querySelector(".btns");
 const restartBtn = document.querySelector(".restart-btn");
+const accuracyScore = document.querySelector(".accuracy-score");
+const resultsH1 = document.querySelector("h1");
+const resultsH2 = document.querySelector("h2");
+const resultsWpm = document.querySelector(".card-wpm-score");
+const resultsAccuracy = document.querySelector(".card-accuracy-score");
+const resultsChar = document.querySelector(".card-characters-score");
+const againBtn = document.querySelector(".variable-btn");
+const pb = document.querySelector(".score-wpm");
+const checkCircle = document.querySelector(".check-circle");
+const highScoreMark = document.querySelector(".high-score-mark");
 
 function toggleDisplay(item) {
   item.classList.toggle("hide");
   item.classList.toggle("flex");
 }
 
-function toggleHide(item) {
+function addFlex(item) {
+  item.classList.remove('hide');
+  item.classList.add('flex');
+}
+
+function removeHide(item) {
   item.classList.remove("hide");
+}
+
+function addHide(item) {
+  item.classList.add("hide");
 }
 
 function ready() {
   typingContainer.classList.remove("blur-text");
   toggleDisplay(btnText);
   toggleDisplay(btns);
-  toggleHide(hr);
+  removeHide(hr);
   fetchData();
 }
 
 function clearInput() {
   inputContainer.value = "";
+}
+
+function clearWpm() {
+  wpmText.innerHTML = "0";
+}
+
+function clearAccuracy() {
+  accuracyScore.innerHTML = "100%";
+  accuracyScore.classList.remove("span-red");
+}
+
+function clearResults() {
+  resultsAccuracy.innerHTML = "";
+  resultsWpm.innerHTML = "";
+  resultsChar.innerHTML = "";
 }
 
 btnText.addEventListener("click", ready);
@@ -110,7 +144,7 @@ async function fetchData() {
     }
   } catch (error) {
     console.error("Error:", error);
-    toggleHide(errorModal);
+    removeHide(errorModal);
   }
 }
 
@@ -118,39 +152,95 @@ async function fetchData() {
 const errorModal = document.querySelector(".error-modal");
 const errorClose = document.querySelector(".error-close");
 errorClose.addEventListener("click", () => {
-  errorModal.classList.add("hide");
+  addHide(errorModal);
 });
 
 fetchData();
 
-//  === compare sample vs input text===
+//  === accuracy check & results===
+const resultsBtn = document.querySelector("#results-btn");
+const complete = document.querySelector(".section__complete");
+const typingSection = document.querySelector(".section__typing");
+
+let correctChar = 0;
+let mistakes = 0;
+let firstTime = true;
+
+resultsAccuracy.innerHTML = "";
+resultsWpm.innerHTML = "";
+resultsChar.innerHTML = "";
 
 inputContainer.addEventListener("input", () => {
   const sampleArray = typingContainer.textContent.split("");
   const inputArray = inputContainer.value.split("");
-
+  let checkedFlags = new Array(sampleArray.length).fill(false);
   let cursorAdded = false;
-
   let testInput = sampleArray
     .map((char, index) => {
       if (inputArray[index] === undefined && !cursorAdded) {
         cursorAdded = true;
         return `<span class="default-text text-cursor">${char}</span>`;
-      } else if (char == inputArray[index]) {
+      } else if (char === inputArray[index] && !checkedFlags[index]) {
+        checkedFlags[index] = true;
+        correctChar++;
         return `<span class="success-text">${char}</span>`;
+      } else if (
+        char !== inputArray[index] &&
+        !checkedFlags[index] &&
+        inputArray[index] !== undefined
+      ) {
+        checkedFlags[index] = true;
+        mistakes++;
+        return `<span class="error-text">${char}</span>`;
       } else if (inputArray[index] === undefined) {
         return `<span class="default-text">${char}</span>`;
-      } else {
-        return `<span class="error-text">${char}</span>`;
+      } else if (checkedFlags[index]) {
+        return `<span class="default-text">${char}</span>`;
       }
     })
     .join("");
 
   if (!cursorAdded) {
-    testInput + -`<span class="text-cursor"></span>`;
+    testInput += `<span class="text-cursor"></span>`;
   }
 
   typingContainer.innerHTML = testInput;
+  const totalTyped = correctChar + mistakes;
+
+  // === accuracy percentage ===
+
+  const accuracyPercentage =
+    totalTyped > 0 ? Math.round((correctChar / totalTyped) * 100) : 0;
+
+  if (accuracyPercentage < 100) {
+    accuracyScore.classList.add("span-red");
+  } else if (accuracyPercentage == 100) {
+    accuracyScore.classList.remove("span-red");
+  }
+
+  accuracyScore.innerHTML = `${accuracyPercentage}%`;
+
+  // // === display results ===
+
+  resultsBtn.addEventListener("click", () => {
+    if (firstTime) {
+      firstTime = false;
+      resultsH1.innerHTML = "Baseline Established!";
+      resultsH2.innerHTML =
+        "You've set the bar. Now the real challenge begins-time to beat it.";
+      againBtn.innerHTML = `Go Again
+          <img src="./assets/images/icon-restart-gray.svg" alt="restart" />`;
+    }
+    addHide(typingSection);
+    toggleDisplay(btns);
+    removeHide(complete);
+
+    resultsAccuracy.innerHTML = `${accuracyPercentage}%`;
+    resultsChar.innerHTML = `
+              ${correctChar}<span class="span-gray"> /</span
+              ><span class="span-red" id="card-wrong-char">${mistakes}</span>
+    `;
+  });
 });
 
 // === restart button control ===
@@ -158,6 +248,19 @@ restartBtn.addEventListener("click", () => {
   clearInput();
   fetchData();
   clearTimer();
+  clearAccuracy();
+  clearWpm();
+  defaultTime();
+});
+
+againBtn.addEventListener("click", () => {
+  removeHide(typingSection);
+  addFlex(btns);
+  clearInput();
+  fetchData();
+  clearTimer();
+  clearAccuracy();
+  clearWpm();
   defaultTime();
 });
 
@@ -192,6 +295,7 @@ function defaultTime() {
   } else if (passage.classList.contains("selected")) {
     timeDisplay.innerHTML = "0:00";
   }
+  timeDisplay.classList.remove("yellow-text");
 }
 
 // --- time formatting ---
@@ -227,6 +331,10 @@ function timedCount() {
   }, 1000);
   // === stop the timer ===
   stopBtn.addEventListener("click", () => {
+    clearInterval(timerInterval);
+    stopped = true;
+  });
+  resultsBtn.addEventListener("click", () => {
     clearInterval(timerInterval);
     stopped = true;
   });
@@ -296,13 +404,37 @@ function wpm() {
   const wordArray = inputContainer.value.split(/\s+/);
   const wordCount = wordArray.length;
   const timeElapsed = (Date.now() - typingStartTime) / 60000;
-
+  const wpmResult = Math.round(wordCount / timeElapsed);
   if (timeElapsed > 0) {
-    const wpmResult = Math.round(wordCount / timeElapsed);
     wpmText.innerHTML = `${wpmResult}`;
   } else {
     wpmText.innerHTML = "0";
   }
+  // ====📌 RESTART FROM PERSONAL BEST LOCAL STORAGE ===
+  
+  
+  resultsBtn.addEventListener("click", () => {
+    resultsWpm.innerHTML = `${wpmResult}`;
+    const pbKey = "personalBest";
+    localStorage.setItem(pbKey, wpmResult);
+    let savedPersonalBest = parseInt(localStorage.getItem(pbKey), 10) || 0;
+ 
+    let newPersonalBest = Math.max(savedPersonalBest, wpmResult);
+    pb.innerHTML = `${newPersonalBest} WPM`;
+    
+    console.log(savedPersonalBest);
+    if (newPersonalBest > savedPersonalBest) {
+      resultsH1.innerHTML = "High Score Smashed!";
+      resultsH2.innerHTML =
+        "You're getting faster. That was incredible typing.";
+      againBtn.innerHTML = `Beat This Score
+          <img src="./assets/images/icon-restart-gray.svg" alt="restart" />`;
+      addHide(checkCircle);
+      removeHide(highScoreMark);
+      localStorage.setItem(pbKey, newPersonalBest);
+      
+    }
+  });
 }
 
 inputContainer.addEventListener("input", () => {
@@ -310,47 +442,4 @@ inputContainer.addEventListener("input", () => {
   if (!typingStartTime) {
     typingStartTime = Date.now();
   }
-});
-
-// === accuracy check ===
-
-const accuracyScore = document.querySelector(".accuracy-score");
-
-let correctChar = 0;
-let mistake = 0;
-
-function accuracy() {
-  correctChar = 0;
-  mistake = 0;
-
-  const sampleArray = typingContainer.textContent.split("");
-  const inputArray = inputContainer.value.split("");
-
-  sampleArray.map((char, index) => {
-    if (char == inputArray[index]) {
-      correctChar++;
-    } else if (inputArray[index] !== undefined) {
-      mistake++;
-    }
-  });
-
-  const totalTyped = correctChar + mistake;
-
-  const accuracyPercentage =
-    totalTyped > 0 ? Math.round((correctChar / totalTyped) * 100) : 0;
-
-  if (accuracyPercentage < 100) {
-    accuracyScore.classList.add("span-red");
-  } else if (accuracyPercentage == 100) {
-    accuracyScore.classList.remove("span-red");
-    accuracyScore.classList.add("success-text");
-  }
-
-  accuracyScore.innerHTML = `${accuracyPercentage}%`;
-}
-
-inputContainer.addEventListener("keydown", (e) => {
-  if (e.key != "Backspace") {
-    accuracy();
-  } 
 });

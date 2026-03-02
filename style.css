@@ -376,12 +376,27 @@ option:checked::before {
 }
 
 .text-cursor{
-  display: inline-flex;
+  /* display: inline-flex;
   align-items: center;
   justify-content: center;
   width: 16px;
   height: 100%;
   top: 2px;
+  border-radius: 4px;
+  background: var(--border07);
+  opacity: .2;
+  mix-blend-mode:luminosity;
+  animation: blink 2s step-start infinite; */
+  position: relative;
+}
+
+.text-cursor:after{
+content: '';
+position: absolute;
+width: 20px;
+height: 40px;
+  top: 2px;
+  left: 1px;
   border-radius: 4px;
   background: var(--border07);
   opacity: .2;
@@ -580,8 +595,9 @@ h2 {
 .card {
   display: flex;
   align-items: flex-start;
-  justify-content: center;
+  justify-content: flex-start;
   flex-direction: column;
+  height: 100%;
   padding: 16px;
   border-radius: var(--radius8);
   border: 0.75px solid var(--border07);
