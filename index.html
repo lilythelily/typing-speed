@@ -141,11 +141,15 @@
       <button type="button" class="restart-btn">
         Restart Test
         <img src="./assets/images/icon-restart.svg" alt="restart" />
-      </button></div>
+      </button>
+    
+      <!-- === View Results === -->
+        <button type = "button" class="stop-timer" id="results-btn">View Results</button>
+    </div>
 
       <!-- 📌Test Complete Start -->
 
-      <section class="section__complete hide">
+      <section class="section__complete">
         <div class="check-circle"></div>
         <div class="high-score-mark hide"></div>
         <h1>Test Complete!</h1>
@@ -155,7 +159,7 @@
           <!-- === WPM card === -->
           <div class="card">
             <p class="card-title">WPM:</p>
-            <p class="card-score">85</p>
+            <p class="card-score wpm-score">85</p>
           </div>
 
           <!-- === Accuracy card === -->
@@ -167,9 +171,9 @@
           <!-- === Character card === -->
           <div class="card">
             <p class="card-title">Characters:</p>
-            <p class="card-score card-characters-score">
+            <p class="card-score card-characters-score" id="card-correct-char">
               120<span class="span-gray"> /</span
-              ><span class="span-red">5</span>
+              ><span class="span-red" id="card-wrong-char">5</span>
             </p>
           </div>
         </div>

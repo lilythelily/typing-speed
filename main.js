@@ -54,6 +54,11 @@ const btnText = document.querySelector(".btn-text");
 const hr = document.querySelector("hr");
 const btns = document.querySelector(".btns");
 const restartBtn = document.querySelector(".restart-btn");
+const accuracyScore = document.querySelector(".accuracy-score");
+const resultsWpm = document.querySelector(".wpm-score");
+const resultsAccuracy = document.querySelector(".card-accuracy-score");
+const resultsCorrect = document.querySelector("#card-correct-char");
+const resultsMistake = document.querySelector("#card-wrong-char");
 
 function toggleDisplay(item) {
   item.classList.toggle("hide");
@@ -74,6 +79,19 @@ function ready() {
 
 function clearInput() {
   inputContainer.value = "";
+}
+
+function clearWpm() {
+  wpmText.innerHTML = "0";
+}
+
+function clearAccuracy() {
+  accuracyScore.innerHTML = "100%";
+  accuracyScore.classList.remove("span-red");
+}
+
+function clearResults() {
+  resultsAccuracy.innerHTML = "";
 }
 
 btnText.addEventListener("click", ready);
@@ -123,34 +141,75 @@ errorClose.addEventListener("click", () => {
 
 fetchData();
 
-//  === compare sample vs input text===
+//  === accuracy check ===
+const resultsBtn = document.querySelector("#results-btn");
+const complete = document.querySelector(".section__complete");
+const typingSection = document.querySelector(".section__typing");
 
+let correctChar = 0;
+let mistakes = 0;
 inputContainer.addEventListener("input", () => {
   const sampleArray = typingContainer.textContent.split("");
   const inputArray = inputContainer.value.split("");
-
+  let checkedFlags = new Array(sampleArray.length).fill(false);
   let cursorAdded = false;
-
   let testInput = sampleArray
     .map((char, index) => {
       if (inputArray[index] === undefined && !cursorAdded) {
         cursorAdded = true;
         return `<span class="default-text text-cursor">${char}</span>`;
-      } else if (char == inputArray[index]) {
+      } else if (char === inputArray[index] && !checkedFlags[index]) {
+        checkedFlags[index] = true;
+        correctChar++;
         return `<span class="success-text">${char}</span>`;
+      } else if (
+        char !== inputArray[index] &&
+        !checkedFlags[index] &&
+        inputArray[index] !== undefined
+      ) {
+        checkedFlags[index] = true;
+        mistakes++;
+        return `<span class="error-text">${char}</span>`;
       } else if (inputArray[index] === undefined) {
         return `<span class="default-text">${char}</span>`;
-      } else {
-        return `<span class="error-text">${char}</span>`;
+      } else if (checkedFlags[index]) {
+        return `<span class="default-text">${char}</span>`;
       }
     })
     .join("");
 
   if (!cursorAdded) {
-    testInput + -`<span class="text-cursor"></span>`;
+    testInput += `<span class="text-cursor"></span>`;
   }
 
   typingContainer.innerHTML = testInput;
+  const totalTyped = correctChar + mistakes;
+
+  console.log(mistakes);
+  console.log(correctChar);
+
+  // === accuracy percentage ===
+
+  const accuracyPercentage =
+    totalTyped > 0 ? Math.round((correctChar / totalTyped) * 100) : 0;
+
+  if (accuracyPercentage < 100) {
+    accuracyScore.classList.add("span-red");
+  } else if (accuracyPercentage == 100) {
+    accuracyScore.classList.remove("span-red");
+  }
+
+  accuracyScore.innerHTML = `${accuracyPercentage}%`;
+
+  // // === display results ===
+
+  resultsAccuracy.innerHTML = "";
+  resultsBtn.addEventListener("click", () => {
+    typingSection.classList.add("hide");
+    toggleDisplay(btns);
+    toggleHide(complete);
+    resultsAccuracy.innerHTML = `${accuracyPercentage}%`;
+  });
 });
 
 // === restart button control ===
@@ -158,6 +217,8 @@ restartBtn.addEventListener("click", () => {
   clearInput();
   fetchData();
   clearTimer();
+  clearAccuracy();
+  clearWpm();
   defaultTime();
 });
 
@@ -192,6 +253,7 @@ function defaultTime() {
   } else if (passage.classList.contains("selected")) {
     timeDisplay.innerHTML = "0:00";
   }
+  timeDisplay.classList.remove("yellow-text");
 }
 
 // --- time formatting ---
@@ -310,47 +372,4 @@ inputContainer.addEventListener("input", () => {
   if (!typingStartTime) {
     typingStartTime = Date.now();
   }
-});
-
-// === accuracy check ===
-
-const accuracyScore = document.querySelector(".accuracy-score");
-
-let correctChar = 0;
-let mistake = 0;
-
-function accuracy() {
-  correctChar = 0;
-  mistake = 0;
-
-  const sampleArray = typingContainer.textContent.split("");
-  const inputArray = inputContainer.value.split("");
-
-  sampleArray.map((char, index) => {
-    if (char == inputArray[index]) {
-      correctChar++;
-    } else if (inputArray[index] !== undefined) {
-      mistake++;
-    }
-  });
-
-  const totalTyped = correctChar + mistake;
-
-  const accuracyPercentage =
-    totalTyped > 0 ? Math.round((correctChar / totalTyped) * 100) : 0;
-
-  if (accuracyPercentage < 100) {
-    accuracyScore.classList.add("span-red");
-  } else if (accuracyPercentage == 100) {
-    accuracyScore.classList.remove("span-red");
-    accuracyScore.classList.add("success-text");
-  }
-
-  accuracyScore.innerHTML = `${accuracyPercentage}%`;
-}
-
-inputContainer.addEventListener("keydown", (e) => {
-  if (e.key != "Backspace") {
-    accuracy();
-  } 
 });
