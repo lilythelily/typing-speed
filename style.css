@@ -643,9 +643,9 @@ h2 {
 }
 
 footer {
-  font-size: 14px;
-  opacity: 0.6;
-  margin: 24px auto;
+  font-size: 12px;
+  opacity: 0.4;
+  margin: 100px auto;
 }
 
 /* === responsive === */
@@ -694,6 +694,10 @@ footer {
 }
 
 @media screen and (max-width: 640px) {
+  .typing-text{
+    font-size: 32px;
+    line-height: 1.4;
+  }
   .section__complete {
     background: url("./assets/images/pattern-star-2.svg"),
       url("./assets/images/pattern-star-1.svg");
@@ -708,5 +712,11 @@ footer {
   }
   .variable-btn {
     margin-bottom: 0px;
+  }
+  .btns{
+    flex-direction: column;
+  }
+  .stop-timer, .restart-btn{
+    width: 100%;
   }
 }

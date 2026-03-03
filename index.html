@@ -20,7 +20,7 @@
         text-align: center;
       }
       .attribution a {
-        color: hsl(228, 45%, 44%);
+        color: hsl(228, 72%, 73%);
       }
     </style>
     <link rel="stylesheet" href="style.css" />
@@ -93,25 +93,25 @@
       <!-- === Mobile Menu Bar === -->
       <div class="dropdown-menu">
         <select name="difficulty" id="difficulty-select">
-          <option value="easy">
+          <option value="easy" class="drop-option">
 
             Easy
           </option>
-          <option value="medium">
+          <option value="medium" class="drop-option">
 
             Medium
           </option>
-          <option value="hard">
+          <option value="hard" class="drop-option">
 
             Hard
           </option>
         </select>
 
-        <select name="timed" id="timed-select" >
-          <option value="timed-60s">
+        <select name="timed" id="timing-dropdown" >
+          <option value="timed-60s" class="drop-time">
             Timed (60s)
           </option>
-          <option value="passage">
+          <option value="passage" class="drop-time">
 
             Passage
           </option>
@@ -147,13 +147,13 @@
         <button type = "button" class="stop-timer" id="results-btn">View Results</button>
     </div>
 
-      <!-- 📌Test Complete Start -->
+      <!-- === results modal popup === -->
 
-      <section class="section__complete">
+      <section class="section__complete hide">
         <div class="check-circle"></div>
         <div class="high-score-mark hide"></div>
-        <h1>Test Complete!</h1>
-        <h2>Solid run. Keep pushing to beat your high score.</h2>
+        <h1></h1>
+        <h2></h2>
 
         <div class="score-cards">
           <!-- === WPM card === -->
@@ -180,12 +180,12 @@
 
 
         <button type="button" class="variable-btn">
-          Go Again
+
           <img src="./assets/images/icon-restart-gray.svg" alt="restart" />
         </button>
+        <button type="button" class="restart-btn" id="clear-storage">Clear Storage</button>
       </section>
 
-      <!-- Test Complete End -->
     </main>
     <footer class="attribution hide">
       Challenge by

@@ -1,9 +1,91 @@
 "use strict";
-
-// === select difficulty ===
-
+const startBtn = document.querySelector(".start-btn");
+const sectionMenu = document.querySelector(".section__menu-container");
 const chipBtn = document.querySelectorAll(".difficulty");
 const [easy, medium, hard] = chipBtn;
+// const dropdownMenu = document.querySelector(".dropdown-menu");
+const dropOptions = document.querySelectorAll(".drop-option");
+const [optionEasy, optionMedium, optionHard] = dropOptions;
+const difficultyDropdown = document.querySelector('#difficulty-select');
+const timingDropdown = document.querySelector("#timing-dropdown");
+const typingContainer = document.querySelector(".typing-text");
+const inputContainer = document.querySelector(".input-container");
+const btnText = document.querySelector(".btn-text");
+const hr = document.querySelector("hr");
+const btns = document.querySelector(".btns");
+const restartBtn = document.querySelector(".restart-btn");
+const accuracyScore = document.querySelector(".accuracy-score");
+const resultsH1 = document.querySelector("h1");
+const resultsH2 = document.querySelector("h2");
+const resultsWpm = document.querySelector(".card-wpm-score");
+const resultsAccuracy = document.querySelector(".card-accuracy-score");
+const resultsChar = document.querySelector(".card-characters-score");
+const againBtn = document.querySelector(".variable-btn");
+const pb = document.querySelector(".score-wpm");
+const checkCircle = document.querySelector(".check-circle");
+const highScoreMark = document.querySelector(".high-score-mark");
+let savedPersonalBest = "";
+const wpmText = document.querySelector(".wpm-score");
+let typingStartTime = null;
+const clearStorageBtn = document.querySelector("#clear-storage");
+
+// === fetch JSON data ===
+
+async function fetchData() {
+  try {
+    const response = await fetch("./data.json");
+    if (!response.ok) {
+      throw new Error(`Response status: ${response.status}`);
+    }
+    const data = await response.json();
+
+    function getRandom() {
+      return Math.floor(Math.random() * 11);
+    }
+
+    let randomNumber = Math.floor(Math.random() * 11);
+
+    // --- populate text in accordance with the level ---
+    const easyText = data.easy[`${randomNumber}`].text;
+    const mediumText = data.medium[`${randomNumber}`].text;
+    const hardText = data.hard[`${randomNumber}`].text;
+
+    if (easy.classList.contains("selected")) {
+      typingContainer.innerHTML = easyText;
+    } else if (medium.classList.contains("selected")) {
+      typingContainer.innerHTML = mediumText;
+    } else if (hard.classList.contains("selected")) {
+      typingContainer.innerHTML = hardText;
+    } else {
+      typingContainer.innerHTML = easyText;
+    }
+
+    // --- mobile dropdown selection ---
+    if (optionEasy.classList.contains("selectedOption")) {
+      typingContainer.innerHTML = easyText;
+    } else if (optionMedium.classList.contains("selectedOption")) {
+      typingContainer.innerHTML = mediumText;
+    } else if (optionHard.classList.contains("selectedOption")) {
+      typingContainer.innerHTML = hardText;
+    } else {
+      typingContainer.innerHTML = easyText;
+    }
+  } catch (error) {
+    console.error("Error:", error);
+    removeHide(errorModal);
+  }
+}
+
+// === error modal ===
+const errorModal = document.querySelector(".error-modal");
+const errorClose = document.querySelector(".error-close");
+errorClose.addEventListener("click", () => {
+  addHide(errorModal);
+});
+
+fetchData();
+
+// === select difficulty ===
 
 function selected(chip) {
   chip.classList.add("selected");
@@ -11,6 +93,7 @@ function selected(chip) {
 function unselected(chip) {
   chip.classList.remove("selected");
 }
+
 chipBtn.forEach((btn) => {
   btn.addEventListener("click", (e) => {
     if (e.target == easy) {
@@ -25,6 +108,33 @@ chipBtn.forEach((btn) => {
       selected(hard);
       unselected(easy);
       unselected(medium);
+    }
+  });
+});
+
+// === mobile selection ===
+
+function optionSelected(item) {
+  item.classList.add("selectedOption");
+}
+function optionUnselected(item) {
+  item.classList.remove("selectedOption");
+}
+
+dropOptions.forEach((option) => {
+  option.addEventListener("click", (e) => {
+    if (e.target == optionEasy) {
+      optionSelected(optionEasy);
+      optionUnselected(optionMedium);
+      optionUnselected(optionHard);
+    } else if (e.target == optionMedium) {
+      optionSelected(optionMedium);
+      optionUnselected(optionEasy);
+      optionUnselected(optionHard);
+    } else {
+      optionSelected(optionHard);
+      optionUnselected(optionEasy);
+      optionUnselected(optionMedium);
     }
   });
 });
@@ -45,34 +155,37 @@ modeBtn.forEach((btn) => {
   });
 });
 
-// === start control ===
+// --- mobile select time mode ---
+const mobileMode = document.querySelectorAll("drop-time");
+const [mobileTimed, mobilePassage] = mobileMode;
 
-const startBtn = document.querySelector(".start-btn");
-const typingContainer = document.querySelector(".typing-text");
-const inputContainer = document.querySelector(".input-container");
-const btnText = document.querySelector(".btn-text");
-const hr = document.querySelector("hr");
-const btns = document.querySelector(".btns");
-const restartBtn = document.querySelector(".restart-btn");
-const accuracyScore = document.querySelector(".accuracy-score");
-const resultsH1 = document.querySelector("h1");
-const resultsH2 = document.querySelector("h2");
-const resultsWpm = document.querySelector(".card-wpm-score");
-const resultsAccuracy = document.querySelector(".card-accuracy-score");
-const resultsChar = document.querySelector(".card-characters-score");
-const againBtn = document.querySelector(".variable-btn");
-const pb = document.querySelector(".score-wpm");
-const checkCircle = document.querySelector(".check-circle");
-const highScoreMark = document.querySelector(".high-score-mark");
+mobileMode.forEach((option) => {
+  option.addEventListener("click", (e) => {
+    if (e.target == mobileTimed) {
+      optionSelected(mobileTimed);
+      optionUnselected(mobilePassage);
+    } else if (e.target == mobilePassage) {
+      optionSelected(mobilePassage);
+      optionUnselected(mobileTimed);
+    }
+  });
+});
+
+// === style control ===
 
 function toggleDisplay(item) {
   item.classList.toggle("hide");
   item.classList.toggle("flex");
 }
 
+function removeFlex(item) {
+  item.classList.remove("flex");
+  item.classList.add("hide");
+}
+
 function addFlex(item) {
-  item.classList.remove('hide');
-  item.classList.add('flex');
+  item.classList.remove("hide");
+  item.classList.add("flex");
 }
 
 function removeHide(item) {
@@ -110,67 +223,23 @@ function clearResults() {
   resultsChar.innerHTML = "";
 }
 
-btnText.addEventListener("click", ready);
+// === start the test ===
 
-// === fetch JSON data ===
-
-async function fetchData() {
-  try {
-    const response = await fetch("./data.json");
-    if (!response.ok) {
-      throw new Error(`Response status: ${response.status}`);
-    }
-    const data = await response.json();
-
-    function getRandom() {
-      return Math.floor(Math.random() * 11);
-    }
-
-    let randomNumber = Math.floor(Math.random() * 11);
-
-    // --- populate text in accordance with the level ---
-    const easyText = data.easy[`${randomNumber}`].text;
-    const mediumText = data.medium[`${randomNumber}`].text;
-    const hardText = data.hard[`${randomNumber}`].text;
-
-    if (easy.classList.contains("selected")) {
-      typingContainer.innerHTML = easyText;
-    } else if (medium.classList.contains("selected")) {
-      typingContainer.innerHTML = mediumText;
-    } else if (hard.classList.contains("selected")) {
-      typingContainer.innerHTML = hardText;
-    } else {
-      typingContainer.innerHTML = easyText;
-    }
-  } catch (error) {
-    console.error("Error:", error);
-    removeHide(errorModal);
-  }
-}
-
-// === error modal ===
-const errorModal = document.querySelector(".error-modal");
-const errorClose = document.querySelector(".error-close");
-errorClose.addEventListener("click", () => {
-  addHide(errorModal);
-});
-
-fetchData();
+startBtn.addEventListener("click", ready);
 
 //  === accuracy check & results===
 const resultsBtn = document.querySelector("#results-btn");
 const complete = document.querySelector(".section__complete");
 const typingSection = document.querySelector(".section__typing");
 
-let correctChar = 0;
-let mistakes = 0;
+let totalCorrect = 0;
 let firstTime = true;
 
-resultsAccuracy.innerHTML = "";
-resultsWpm.innerHTML = "";
-resultsChar.innerHTML = "";
-
 inputContainer.addEventListener("input", () => {
+  resultsAccuracy.innerHTML = "";
+  resultsWpm.innerHTML = "";
+  resultsChar.innerHTML = "";
+
   const sampleArray = typingContainer.textContent.split("");
   const inputArray = inputContainer.value.split("");
   let checkedFlags = new Array(sampleArray.length).fill(false);
@@ -182,7 +251,7 @@ inputContainer.addEventListener("input", () => {
         return `<span class="default-text text-cursor">${char}</span>`;
       } else if (char === inputArray[index] && !checkedFlags[index]) {
         checkedFlags[index] = true;
-        correctChar++;
+        // correctChar++;
         return `<span class="success-text">${char}</span>`;
       } else if (
         char !== inputArray[index] &&
@@ -190,7 +259,7 @@ inputContainer.addEventListener("input", () => {
         inputArray[index] !== undefined
       ) {
         checkedFlags[index] = true;
-        mistakes++;
+        // mistakes++;
         return `<span class="error-text">${char}</span>`;
       } else if (inputArray[index] === undefined) {
         return `<span class="default-text">${char}</span>`;
@@ -204,13 +273,20 @@ inputContainer.addEventListener("input", () => {
     testInput += `<span class="text-cursor"></span>`;
   }
 
+  const totalCorrect = sampleArray.reduce((acc, curr, index) => {
+    if (curr === inputArray[index]) {
+      return acc + 1;
+    }
+    return acc;
+  }, 0);
+
+  const totalTyped = inputArray.length;
   typingContainer.innerHTML = testInput;
-  const totalTyped = correctChar + mistakes;
 
   // === accuracy percentage ===
 
   const accuracyPercentage =
-    totalTyped > 0 ? Math.round((correctChar / totalTyped) * 100) : 0;
+    totalTyped > 0 ? Math.floor((totalCorrect / totalTyped) * 100) : 0;
 
   if (accuracyPercentage < 100) {
     accuracyScore.classList.add("span-red");
@@ -220,9 +296,26 @@ inputContainer.addEventListener("input", () => {
 
   accuracyScore.innerHTML = `${accuracyPercentage}%`;
 
+  if (!typingStartTime) {
+    typingStartTime = Date.now();
+  }
+
+  // === wpm ===
+  const wordArray = inputContainer.value.split(/\s+/);
+  const wordCount = wordArray.length;
+  const timeElapsed = (Date.now() - typingStartTime) / 60000;
+  const wpmResult = Math.floor(wordCount / timeElapsed);
+
+  if (timeElapsed > 0) {
+    wpmText.innerHTML = `${wpmResult}`;
+  } else {
+    wpmText.innerHTML = "0";
+  }
+
   // // === display results ===
 
   resultsBtn.addEventListener("click", () => {
+    handlePb();
     if (firstTime) {
       firstTime = false;
       resultsH1.innerHTML = "Baseline Established!";
@@ -230,15 +323,23 @@ inputContainer.addEventListener("input", () => {
         "You've set the bar. Now the real challenge begins-time to beat it.";
       againBtn.innerHTML = `Go Again
           <img src="./assets/images/icon-restart-gray.svg" alt="restart" />`;
+      addHide(highScoreMark);
+      removeHide(checkCircle);
     }
     addHide(typingSection);
-    toggleDisplay(btns);
+    removeFlex(btns);
     removeHide(complete);
+    addHide(hr);
+    addHide(sectionMenu);
+    addHide(difficultyDropdown);
+    addHide(timingDropdown);
 
     resultsAccuracy.innerHTML = `${accuracyPercentage}%`;
     resultsChar.innerHTML = `
-              ${correctChar}<span class="span-gray"> /</span
-              ><span class="span-red" id="card-wrong-char">${mistakes}</span>
+              ${totalCorrect}<span class="span-gray"> /</span
+              ><span class="span-red" id="card-wrong-char">${
+                totalTyped - totalCorrect
+              }</span>
     `;
   });
 });
@@ -255,13 +356,24 @@ restartBtn.addEventListener("click", () => {
 
 againBtn.addEventListener("click", () => {
   removeHide(typingSection);
-  addFlex(btns);
+  toggleDisplay(btns);
   clearInput();
   fetchData();
   clearTimer();
   clearAccuracy();
   clearWpm();
   defaultTime();
+  removeHide(hr);
+  removeHide(sectionMenu);
+  addHide(complete);
+  totalCorrect = 0;
+  resultsAccuracy.innerHTML = "";
+  resultsWpm.innerHTML = "";
+  resultsChar.innerHTML = "";
+  inputContainer.value = "";
+  typingStartTime = Date.now();
+      removeHide(difficultyDropdown);
+      removeHide(timingDropdown);
 });
 
 // === timer control ===
@@ -293,6 +405,10 @@ function defaultTime() {
   if (timed.classList.contains("selected")) {
     timeDisplay.innerHTML = "0:60";
   } else if (passage.classList.contains("selected")) {
+    timeDisplay.innerHTML = "0:00";
+  } else if (mobileTimed.classList.contains("selectedOption")) {
+    timeDisplay.innerHTML = "0:60";
+  } else {
     timeDisplay.innerHTML = "0:00";
   }
   timeDisplay.classList.remove("yellow-text");
@@ -366,6 +482,10 @@ function passageCount() {
       stoppedPassage = true;
     }
   });
+  resultsBtn.addEventListener("click", () => {
+    clearInterval(timerInterval);
+    stoppedPassage = true;
+  });
 }
 
 // === timer starts by typing a text ===
@@ -374,6 +494,13 @@ inputContainer.addEventListener("click", () => {
   if (timed.classList.contains("selected")) {
     timedCount();
   } else if (passage.classList.contains("selected")) {
+    passageCount();
+  }
+
+  const dropdownValue = timingDropdown.value;
+  if (dropdownValue === "timed-60s") {
+    timedCount();
+  } else if (dropdownValue === "passage") {
     passageCount();
   }
 });
@@ -391,16 +518,9 @@ inputContainer.addEventListener("click", () => {
   }
 });
 
-// === wpm count ===
+// === personal best count ===
 
-const wpmText = document.querySelector(".wpm-score");
-let typingStartTime = null;
-
-function wpm() {
-  if (!typingStartTime) {
-    wpmText.innerHTML = "0";
-    return;
-  }
+function handlePb() {
   const wordArray = inputContainer.value.split(/\s+/);
   const wordCount = wordArray.length;
   const timeElapsed = (Date.now() - typingStartTime) / 60000;
@@ -410,36 +530,41 @@ function wpm() {
   } else {
     wpmText.innerHTML = "0";
   }
-  // ====📌 RESTART FROM PERSONAL BEST LOCAL STORAGE ===
-  
-  
-  resultsBtn.addEventListener("click", () => {
-    resultsWpm.innerHTML = `${wpmResult}`;
-    const pbKey = "personalBest";
-    localStorage.setItem(pbKey, wpmResult);
-    let savedPersonalBest = parseInt(localStorage.getItem(pbKey), 10) || 0;
- 
-    let newPersonalBest = Math.max(savedPersonalBest, wpmResult);
-    pb.innerHTML = `${newPersonalBest} WPM`;
-    
-    console.log(savedPersonalBest);
-    if (newPersonalBest > savedPersonalBest) {
-      resultsH1.innerHTML = "High Score Smashed!";
-      resultsH2.innerHTML =
-        "You're getting faster. That was incredible typing.";
-      againBtn.innerHTML = `Beat This Score
+
+  const pbKey = "personalBest";
+  savedPersonalBest = parseInt(localStorage.getItem(pbKey), 10) || 0;
+  resultsWpm.innerHTML = `${wpmResult}`;
+
+  if (wpmResult > savedPersonalBest && firstTime) {
+    savedPersonalBest = wpmResult;
+    localStorage.setItem(pbKey, savedPersonalBest);
+    resultsH1.innerHTML = "High Score Smashed!";
+    resultsH2.innerHTML = "You're getting faster. That was incredible typing.";
+    againBtn.innerHTML = `Beat This Score
           <img src="./assets/images/icon-restart-gray.svg" alt="restart" />`;
-      addHide(checkCircle);
-      removeHide(highScoreMark);
-      localStorage.setItem(pbKey, newPersonalBest);
-      
-    }
-  });
+    addHide(checkCircle);
+    removeHide(highScoreMark);
+  } else if (wpmResult <= savedPersonalBest && firstTime) {
+    resultsH1.innerHTML = "Test Complete!";
+    resultsH2.innerHTML = "Solid run. Keep pushing to beat your high score.";
+    againBtn.innerHTML = `Go Again
+          <img src="./assets/images/icon-restart-gray.svg" alt="restart" />`;
+    removeHide(checkCircle);
+    addHide(highScoreMark);
+  }
+
+  pb.innerHTML = `${savedPersonalBest} WPM`;
 }
 
-inputContainer.addEventListener("input", () => {
-  wpm();
-  if (!typingStartTime) {
-    typingStartTime = Date.now();
-  }
+// === clear local storage ===
+
+clearStorageBtn.addEventListener("click", () => {
+  localStorage.clear();
+});
+
+// === display personal data on page load ===
+document.addEventListener("DOMContentLoaded", () => {
+  const pbKey = "personalBest";
+  const savedPersonalBest = parseInt(localStorage.getItem(pbKey), 10) || 0;
+  pb.innerHTML = `${savedPersonalBest} WPM`;
 });
