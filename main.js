@@ -4,10 +4,12 @@ const sectionMenu = document.querySelector(".section__menu-container");
 const chipBtn = document.querySelectorAll(".difficulty");
 const [easy, medium, hard] = chipBtn;
 // const dropdownMenu = document.querySelector(".dropdown-menu");
-const dropOptions = document.querySelectorAll(".drop-option");
-const [optionEasy, optionMedium, optionHard] = dropOptions;
-const difficultyDropdown = document.querySelector('#difficulty-select');
-const timingDropdown = document.querySelector("#timing-dropdown");
+// const dropOptions = document.querySelectorAll(".drop-option");
+// const [optionEasy, optionMedium, optionHard] = dropOptions;
+// const difficultyDropdown = document.querySelector("#difficulty-select");
+// const difficultyOption = document.querySelector(".difficultyDropdown");
+// const timingDropdown = document.querySelector("#timing-dropdown");
+// let dropdownValue = timingDropdown.value;
 const typingContainer = document.querySelector(".typing-text");
 const inputContainer = document.querySelector(".input-container");
 const btnText = document.querySelector(".btn-text");
@@ -29,6 +31,11 @@ const wpmText = document.querySelector(".wpm-score");
 let typingStartTime = null;
 const clearStorageBtn = document.querySelector("#clear-storage");
 
+const titleDifficulty = document.querySelector('#title-difficulty');
+const menuDifficulty = document.querySelector('#difficulty-menu');
+const titleTime = document.querySelector("#title-time");
+const menuTime = document.querySelector("#time-menu");
+
 // === fetch JSON data ===
 
 async function fetchData() {
@@ -39,9 +46,9 @@ async function fetchData() {
     }
     const data = await response.json();
 
-    function getRandom() {
-      return Math.floor(Math.random() * 11);
-    }
+    // function getRandom() {
+    //   return Math.floor(Math.random() * 11);
+    // }
 
     let randomNumber = Math.floor(Math.random() * 11);
 
@@ -50,26 +57,17 @@ async function fetchData() {
     const mediumText = data.medium[`${randomNumber}`].text;
     const hardText = data.hard[`${randomNumber}`].text;
 
-    if (easy.classList.contains("selected")) {
-      typingContainer.innerHTML = easyText;
-    } else if (medium.classList.contains("selected")) {
-      typingContainer.innerHTML = mediumText;
-    } else if (hard.classList.contains("selected")) {
-      typingContainer.innerHTML = hardText;
-    } else {
-      typingContainer.innerHTML = easyText;
-    }
 
-    // --- mobile dropdown selection ---
-    if (optionEasy.classList.contains("selectedOption")) {
-      typingContainer.innerHTML = easyText;
-    } else if (optionMedium.classList.contains("selectedOption")) {
-      typingContainer.innerHTML = mediumText;
-    } else if (optionHard.classList.contains("selectedOption")) {
-      typingContainer.innerHTML = hardText;
-    } else {
-      typingContainer.innerHTML = easyText;
-    }
+      if (easy.classList.contains("selected")) {
+        typingContainer.innerHTML = easyText;
+      } else if (medium.classList.contains("selected")) {
+        typingContainer.innerHTML = mediumText;
+      } else if (hard.classList.contains("selected")) {
+        typingContainer.innerHTML = hardText;
+      } else {
+        typingContainer.innerHTML = easyText;
+      }
+
   } catch (error) {
     console.error("Error:", error);
     removeHide(errorModal);
@@ -94,50 +92,70 @@ function unselected(chip) {
   chip.classList.remove("selected");
 }
 
+// function clearAll() {
+//   unselected(easy);
+//   unselected(medium);
+//   unselected(hard);
+
+// }
+
+function selectUnselect(item1, item2, item3) {
+  selected(item1);
+  unselected(item2);
+  unselected(item3);
+}
+
 chipBtn.forEach((btn) => {
   btn.addEventListener("click", (e) => {
     if (e.target == easy) {
-      selected(easy);
-      unselected(medium);
-      unselected(hard);
+      selectUnselect(easy, medium, hard);
     } else if (e.target == medium) {
-      selected(medium);
-      unselected(easy);
-      unselected(hard);
-    } else {
-      selected(hard);
-      unselected(easy);
-      unselected(medium);
-    }
+      selectUnselect(medium, easy, hard);
+    } else if (e.target == hard) {
+      selectUnselect(hard, easy, medium);
+}
   });
 });
 
-// === mobile selection ===
+// === mobile dropdown selection ===
 
-function optionSelected(item) {
-  item.classList.add("selectedOption");
+function opacity1(item) {
+  item.style.opacity = 1;
 }
-function optionUnselected(item) {
-  item.classList.remove("selectedOption");
+function opacity0(item) {
+  item.style.opacity = 0;
 }
 
-dropOptions.forEach((option) => {
-  option.addEventListener("click", (e) => {
-    if (e.target == optionEasy) {
-      optionSelected(optionEasy);
-      optionUnselected(optionMedium);
-      optionUnselected(optionHard);
-    } else if (e.target == optionMedium) {
-      optionSelected(optionMedium);
-      optionUnselected(optionEasy);
-      optionUnselected(optionHard);
-    } else {
-      optionSelected(optionHard);
-      optionUnselected(optionEasy);
-      optionUnselected(optionMedium);
-    }
-  });
+titleDifficulty.addEventListener('click', () => {
+  opacity1(menuDifficulty);
+})
+
+titleTime.addEventListener("click", () => {
+  opacity1(menuTime);
 });
+
+
+menuDifficulty.addEventListener('click', (e) => {
+    opacity0(menuDifficulty);
+    if (e.target == menuDifficulty.firstElementChild) {
+      titleDifficulty.innerHTML = "Easy";
+    } else if (e.target == menuDifficulty.lastElementChild) {
+      titleDifficulty.innerHTML = "Hard";
+    } else {
+      titleDifficulty.innerHTML = "Medium"
+}
+})
+  
+menuTime.addEventListener('click', (e) => {
+  opacity0(menuTime);
+  if (e.target == menuTime.firstElementChild) {
+    titleTime.innerHTML = "Timed (60s)";
+  } else if (e.target == menuTime.lastElementChild){
+    titleTime.innerHTML = "Passage";
+  }
+});
+
+
 
 // === select mode ===
 const modeBtn = document.querySelectorAll(".mode");
@@ -155,21 +173,6 @@ modeBtn.forEach((btn) => {
   });
 });
 
-// --- mobile select time mode ---
-const mobileMode = document.querySelectorAll("drop-time");
-const [mobileTimed, mobilePassage] = mobileMode;
-
-mobileMode.forEach((option) => {
-  option.addEventListener("click", (e) => {
-    if (e.target == mobileTimed) {
-      optionSelected(mobileTimed);
-      optionUnselected(mobilePassage);
-    } else if (e.target == mobilePassage) {
-      optionSelected(mobilePassage);
-      optionUnselected(mobileTimed);
-    }
-  });
-});
 
 // === style control ===
 
@@ -201,7 +204,11 @@ function ready() {
   toggleDisplay(btnText);
   toggleDisplay(btns);
   removeHide(hr);
-  fetchData();
+  // fetchData();
+  defaultTime();
+  // clearAll();
+  // clearTimeSelection();
+  // defaultMobileOptions();
 }
 
 function clearInput() {
@@ -251,7 +258,7 @@ inputContainer.addEventListener("input", () => {
         return `<span class="default-text text-cursor">${char}</span>`;
       } else if (char === inputArray[index] && !checkedFlags[index]) {
         checkedFlags[index] = true;
-        // correctChar++;
+
         return `<span class="success-text">${char}</span>`;
       } else if (
         char !== inputArray[index] &&
@@ -259,7 +266,7 @@ inputContainer.addEventListener("input", () => {
         inputArray[index] !== undefined
       ) {
         checkedFlags[index] = true;
-        // mistakes++;
+
         return `<span class="error-text">${char}</span>`;
       } else if (inputArray[index] === undefined) {
         return `<span class="default-text">${char}</span>`;
@@ -351,7 +358,7 @@ restartBtn.addEventListener("click", () => {
   clearTimer();
   clearAccuracy();
   clearWpm();
-  defaultTime();
+  // clearAll();
 });
 
 againBtn.addEventListener("click", () => {
@@ -372,8 +379,10 @@ againBtn.addEventListener("click", () => {
   resultsChar.innerHTML = "";
   inputContainer.value = "";
   typingStartTime = Date.now();
-      removeHide(difficultyDropdown);
-      removeHide(timingDropdown);
+  removeHide(difficultyDropdown);
+  removeHide(timingDropdown);
+  // clearAll();
+  // clearTimeSelection();
 });
 
 // === timer control ===
@@ -406,13 +415,18 @@ function defaultTime() {
     timeDisplay.innerHTML = "0:60";
   } else if (passage.classList.contains("selected")) {
     timeDisplay.innerHTML = "0:00";
-  } else if (mobileTimed.classList.contains("selectedOption")) {
-    timeDisplay.innerHTML = "0:60";
-  } else {
-    timeDisplay.innerHTML = "0:00";
   }
   timeDisplay.classList.remove("yellow-text");
+
 }
+
+// function clearTimeSelection() {
+//   unselected(timed);
+//   unselected(passage);
+//   dropdownValue = "";
+//   console.log(dropdownValue);
+// }
+
 
 // --- time formatting ---
 
@@ -495,14 +509,7 @@ inputContainer.addEventListener("click", () => {
     timedCount();
   } else if (passage.classList.contains("selected")) {
     passageCount();
-  }
-
-  const dropdownValue = timingDropdown.value;
-  if (dropdownValue === "timed-60s") {
-    timedCount();
-  } else if (dropdownValue === "passage") {
-    passageCount();
-  }
+  } 
 });
 
 // === resume typing ===
