@@ -72,9 +72,10 @@
           <!-- === Difficulty === -->
           <div class="menu-tab pad-right">
             <p class="tab-title-small">Difficulty:</p>
-            <div class="chips-container">
+            <div class="mobile-title hide" id="title-difficulty">Easy</div>
+            <div class="chips-container" id="difficulty-menu">
               <p class="chip-item difficulty selected">Easy</p>
-              <p class="chip-item difficulty">Medium</p>
+              <p class="chip-item difficulty" id="medium">Medium</p>
               <p class="chip-item difficulty">Hard</p>
             </div>
           </div>
@@ -82,9 +83,10 @@
           <!-- === Mode === -->
           <div class="menu-tab last-tab">
             <p class="tab-title-small">Mode:</p>
-            <div class="chips-container">
+             <div class="mobile-title hide" id="title-time">Timed (60s)</div>
+            <div class="chips-container" id="time-menu">
               <p class="chip-item mode selected">Timed (60s)</p>
-              <p class="chip-item mode" >Passage</p>
+              <p class="chip-item mode"id="passage" >Passage</p>
             </div>
           </div>
         </div>
@@ -93,6 +95,7 @@
       <!-- === Mobile Menu Bar === -->
       <div class="dropdown-menu">
         <select name="difficulty" id="difficulty-select">
+
           <option value="easy" class="drop-option">
 
             Easy
