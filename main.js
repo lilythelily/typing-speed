@@ -2,7 +2,7 @@
 const startBtn = document.querySelector(".start-btn");
 const sectionMenu = document.querySelector(".section__menu-container");
 const chipBtn = document.querySelectorAll(".difficulty");
-const [easy, medium, hard] = chipBtn;
+const [easy, medium, hard, easyMobile, mediumMobile, hardMobile] = chipBtn;
 const typingContainer = document.querySelector(".typing-text");
 const inputContainer = document.querySelector(".input-container");
 const btnText = document.querySelector(".btn-text");
@@ -19,7 +19,7 @@ const againBtn = document.querySelector(".variable-btn");
 const pb = document.querySelector(".score-wpm");
 const checkCircle = document.querySelector(".check-circle");
 const highScoreMark = document.querySelector(".high-score-mark");
-let savedPersonalBest = "";
+let savedPersonalBest = null;
 const wpmText = document.querySelector(".wpm-score");
 let typingStartTime = null;
 let typingEndTime = null;
@@ -47,15 +47,29 @@ async function fetchData() {
     const mediumText = data.medium[`${randomNumber}`].text;
     const hardText = data.hard[`${randomNumber}`].text;
 
-    if (easy.classList.contains("selected")) {
+    if (
+      easy.classList.contains("selected") ||
+      easyMobile.classList.contains("selected")
+    ) {
       typingContainer.innerHTML = easyText;
-    } else if (medium.classList.contains("selected")) {
+    } else if (
+      medium.classList.contains("selected") ||
+      mediumMobile.classList.contains("selected")
+    ) {
       typingContainer.innerHTML = mediumText;
-    } else if (hard.classList.contains("selected")) {
+    } else if (
+      hard.classList.contains("selected") ||
+      hardMobile.classList.contains("selected")
+    ) {
       typingContainer.innerHTML = hardText;
     } else {
       typingContainer.innerHTML = easyText;
     }
+
+    // === always display peronal best score ===
+    const pbKey = "personalBest";
+    savedPersonalBest = parseInt(localStorage.getItem(pbKey), 10) || 0;
+    pb.innerHTML = `${savedPersonalBest} WPM`;
   } catch (error) {
     console.error("Error:", error);
     removeHide(errorModal);
@@ -80,20 +94,28 @@ function unselected(chip) {
   chip.classList.remove("selected");
 }
 
-function selectUnselect(item1, item2, item3) {
+function selectUnselect(item1, item2, item3, item4, item5) {
   selected(item1);
   unselected(item2);
   unselected(item3);
+  unselected(item4);
+  unselected(item5);
 }
 
 chipBtn.forEach((btn) => {
   btn.addEventListener("click", (e) => {
     if (e.target == easy) {
-      selectUnselect(easy, medium, hard);
+      selectUnselect(easy, medium, hard, mediumMobile, hardMobile);
     } else if (e.target == medium) {
-      selectUnselect(medium, easy, hard);
+      selectUnselect(medium, easy, hard, easyMobile, hardMobile);
     } else if (e.target == hard) {
-      selectUnselect(hard, easy, medium);
+      selectUnselect(hard, easy, medium, easyMobile, mediumMobile);
+    } else if (e.target == easyMobile) {
+      selectUnselect(easyMobile, medium, hard, mediumMobile, hardMobile);
+    } else if (e.target == mediumMobile) {
+      selectUnselect(mediumMobile, easy, hard, easyMobile, hardMobile);
+    } else if (e.target == hardMobile) {
+      selectUnselect(hardMobile, easy, medium, easyMobile, hardMobile);
     }
     fetchData();
   });
@@ -116,31 +138,25 @@ titleTime.addEventListener("click", () => {
   opacity1(menuTime);
 });
 
-const mobileMediaQuery = window.matchMedia("(max-width: 950px)");
+// menuDisplayToggle();
 
 menuDifficulty.addEventListener("click", (e) => {
-  if (mobileMediaQuery.matches) {
-    opacity0(menuDifficulty);
-    if (e.target == menuDifficulty.firstElementChild) {
-      titleDifficulty.innerHTML = "Easy";
-    } else if (e.target == menuDifficulty.lastElementChild) {
-      titleDifficulty.innerHTML = "Hard";
-    } else {
-      titleDifficulty.innerHTML = "Medium";
-    }
+  opacity0(menuDifficulty);
+  if (e.target == menuDifficulty.firstElementChild) {
+    titleDifficulty.innerHTML = "Easy";
+  } else if (e.target == menuDifficulty.lastElementChild) {
+    titleDifficulty.innerHTML = "Hard";
   } else {
-    opacity1(menuDifficulty);
+    titleDifficulty.innerHTML = "Medium";
   }
 });
 
 menuTime.addEventListener("click", (e) => {
-  if (mobileMediaQuery.matches) {
-    opacity0(menuTime);
-    if (e.target == menuTime.firstElementChild) {
-      titleTime.innerHTML = "Timed (60s)";
-    } else if (e.target == menuTime.lastElementChild) {
-      titleTime.innerHTML = "Passage";
-    }
+  opacity0(menuTime);
+  if (e.target == menuTime.firstElementChild) {
+    titleTime.innerHTML = "Timed (60s)";
+  } else if (e.target == menuTime.lastElementChild) {
+    titleTime.innerHTML = "Passage";
   } else {
     opacity1(menuTime);
   }
@@ -155,9 +171,11 @@ modeBtn.forEach((btn) => {
     if (e.target == timed) {
       selected(timed);
       unselected(passage);
+      timeDisplay.innerHTML = "0:60";
     } else {
       selected(passage);
       unselected(timed);
+      timeDisplay.innerHTML = "0:00";
     }
   });
 });
@@ -192,8 +210,8 @@ function ready() {
   toggleDisplay(btnText);
   toggleDisplay(btns);
   removeHide(hr);
-  defaultTime();
   timerMode();
+  removeConfetti();
 }
 
 function clearInput() {
@@ -218,7 +236,14 @@ function clearResults() {
 // === start the test ===
 
 startBtn.addEventListener("click", ready);
-btnText.addEventListener("click", ready);
+
+btnText.addEventListener('click', (e) => {
+  if (e.target !== startBtn) {
+    ready();
+    addHide(startBtn);
+    addHide(startBtn.nextElementSibling);
+  }
+})
 
 //  === accuracy check & results===
 const resultsBtn = document.querySelector("#results-btn");
@@ -228,6 +253,9 @@ const typingSection = document.querySelector(".section__typing");
 let totalCorrect = 0;
 
 inputContainer.addEventListener("input", () => {
+  console.log(passage);
+  console.log(stoppedPassage);
+  console.log(timed);
   resultsAccuracy.innerHTML = "";
   resultsWpm.innerHTML = "";
   resultsChar.innerHTML = "";
@@ -337,7 +365,7 @@ restartBtn.addEventListener("click", () => {
   clearTimer();
   clearAccuracy();
   clearWpm();
-  defaultTime();
+  timerMode();
 });
 
 againBtn.addEventListener("click", () => {
@@ -346,10 +374,9 @@ againBtn.addEventListener("click", () => {
   clearInput();
   fetchData();
   clearTimer();
-  timerMode();
+  // timerMode();
   clearAccuracy();
   clearWpm();
-  defaultTime();
   removeHide(hr);
   removeHide(sectionMenu);
   addHide(complete);
@@ -360,8 +387,9 @@ againBtn.addEventListener("click", () => {
   inputContainer.value = "";
   typingStartTime = Date.now();
   typingEndTime = "";
-  stopped = true;
-  stoppedPassage = true;
+  // stopped = true;
+  // stoppedPassage = true;
+  removeConfetti();
 });
 
 // === timer control ===
@@ -369,7 +397,7 @@ againBtn.addEventListener("click", () => {
 let timerInterval;
 let start;
 let remainingTime = 60000;
-let stopped = false;
+let stopped = null;
 
 const timeDisplay = document.querySelector(".time-count");
 const stopBtn = document.querySelector(".stop-timer");
@@ -385,17 +413,6 @@ function clearTimer() {
     clearInterval(timerInterval);
     timerInterval = null;
   }
-}
-
-// --- revert timer display to default ---
-
-function defaultTime() {
-  if (timed.classList.contains("selected")) {
-    timeDisplay.innerHTML = "0:60";
-  } else if (passage.classList.contains("selected")) {
-    timeDisplay.innerHTML = "0:00";
-  }
-  timeDisplay.classList.remove("yellow-text");
 }
 
 // --- time formatting ---
@@ -443,7 +460,7 @@ function timedCount() {
 // --- passage mode ---
 
 let elapsedTime = 0;
-let stoppedPassage = false;
+let stoppedPassage = null;
 
 function passageCount() {
   clearTimer();
@@ -487,6 +504,7 @@ function timerMode() {
 
 // === resume typing ===
 inputContainer.addEventListener("click", () => {
+  timerMode();
   if (stopped) {
     stopped = false;
     start = Date.now;
@@ -525,9 +543,9 @@ function handlePb() {
   savedPersonalBest = parseInt(localStorage.getItem(pbKey), 10) || 0;
   resultsWpm.innerHTML = `${wpmResult}`;
 
-  // ==== 📌first time??? ===
-  if (savedPersonalBest === null) {
-    localStorage.setItem(pbKey, wpmResult);
+  if (!savedPersonalBest) {
+    savedPersonalBest = wpmResult;
+    localStorage.setItem(pbKey, savedPersonalBest);
     resultsH1.innerHTML = "Baseline Established!";
     resultsH2.innerHTML =
       "You've set the bar. Now the real challenge begins-time to beat it.";
@@ -535,15 +553,17 @@ function handlePb() {
           <img src="./assets/images/icon-restart-gray.svg" alt="restart" />`;
     addHide(highScoreMark);
     removeHide(checkCircle);
-  } else if (wpmResult > savedPersonalBest) {
-    localStorage.setItem(pbKey, wpmResult);
+  } else if (wpmResult > savedPersonalBest && savedPersonalBest !== null) {
+    savedPersonalBest = wpmResult;
+    localStorage.setItem(pbKey, savedPersonalBest);
     resultsH1.innerHTML = "High Score Smashed!";
     resultsH2.innerHTML = "You're getting faster. That was incredible typing.";
     againBtn.innerHTML = `Beat This Score
           <img src="./assets/images/icon-restart-gray.svg" alt="restart" />`;
     addHide(checkCircle);
     removeHide(highScoreMark);
-  } else {
+    addConfetti();
+  } else if (wpmResult < savedPersonalBest && savedPersonalBest !== null) {
     resultsH1.innerHTML = "Test Complete!";
     resultsH2.innerHTML = "Solid run. Keep pushing to beat your high score.";
     againBtn.innerHTML = `Go Again
@@ -561,15 +581,12 @@ clearStorageBtn.addEventListener("click", () => {
   localStorage.clear();
 });
 
-// === display personal data on page load ===
-document.addEventListener("DOMContentLoaded", () => {
-  const pbKey = "personalBest";
-  const savedPersonalBest = parseInt(localStorage.getItem(pbKey), 10) || 0;
-  pb.innerHTML = `${savedPersonalBest} WPM`;
-});
-
 // === confetti ===
 
-// body.addEventListener('click', () => {
-//   body.classList.add('confetti');
-// })
+function addConfetti() {
+  body.classList.add("confetti");
+}
+
+function removeConfetti() {
+  body.classList.remove("confetti");
+}

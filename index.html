@@ -68,11 +68,33 @@
 
         <!-- === Menu Bar: right === -->
 
-        <div class="menu-section menu-right">
+        <div class="menu-section menu-right" id="desktop-menu">
           <!-- === Difficulty === -->
           <div class="menu-tab pad-right">
             <p class="tab-title-small">Difficulty:</p>
-            <div class="mobile-title hide" id="title-difficulty">Easy</div>
+            <div class="chips-container">
+              <p class="chip-item difficulty selected">Easy</p>
+              <p class="chip-item difficulty" id="medium">Medium</p>
+              <p class="chip-item difficulty">Hard</p>
+            </div>
+          </div>
+
+          <!-- === Mode === -->
+          <div class="menu-tab last-tab">
+            <p class="tab-title-small">Mode:</p>
+            <div class="chips-container"">
+              <p class="chip-item mode selected">Timed (60s)</p>
+              <p class="chip-item mode"id="passage" >Passage</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- === mobile menu bar right === -->
+<div class="menu-section menu-right" id="mobile-menu">
+          <!-- === Difficulty === -->
+          <div class="menu-tab pad-right">
+            <p class="tab-title-small">Difficulty:</p>
+            <div class="mobile-title" id="title-difficulty">Easy</div>
             <div class="chips-container" id="difficulty-menu">
               <p class="chip-item difficulty selected">Easy</p>
               <p class="chip-item difficulty" id="medium">Medium</p>
@@ -83,43 +105,17 @@
           <!-- === Mode === -->
           <div class="menu-tab last-tab">
             <p class="tab-title-small">Mode:</p>
-             <div class="mobile-title hide" id="title-time">Timed (60s)</div>
+             <div class="mobile-title" id="title-time">Timed (60s)</div>
             <div class="chips-container" id="time-menu">
               <p class="chip-item mode selected">Timed (60s)</p>
               <p class="chip-item mode"id="passage" >Passage</p>
             </div>
           </div>
-        </div>
+
+
       </section>
 
-      <!-- === Mobile Menu Bar === -->
-      <div class="dropdown-menu">
-        <select name="difficulty" id="difficulty-select">
 
-          <option value="easy" class="drop-option">
-
-            Easy
-          </option>
-          <option value="medium" class="drop-option">
-
-            Medium
-          </option>
-          <option value="hard" class="drop-option">
-
-            Hard
-          </option>
-        </select>
-
-        <select name="timed" id="timing-dropdown" >
-          <option value="timed-60s" class="drop-time">
-            Timed (60s)
-          </option>
-          <option value="passage" class="drop-time">
-
-            Passage
-          </option>
-        </select>
-      </div>
 
       <!-- === typing section === -->
 
@@ -139,7 +135,7 @@
 
 <div class="btns hide">
 <!-- === Stop Timer === -->
-        <button type = "button" class="stop-timer ">Stop Timer</button>
+        <!-- <button type = "button" class="stop-timer ">Stop Timer</button> -->
       <!-- === Restart Button === -->
       <button type="button" class="restart-btn">
         Restart Test
@@ -186,8 +182,9 @@
 
           <img src="./assets/images/icon-restart-gray.svg" alt="restart" />
         </button>
-        <button type="button" class="restart-btn" id="clear-storage">Clear Storage</button>
+        <!-- <button type="button" class="restart-btn" id="clear-storage">Clear Personal Best</button> -->
       </section>
+
 
     </main>
     <footer class="attribution hide">
