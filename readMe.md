@@ -1,7 +1,12 @@
 # Frontend Mentor - Typing Speed Test WebApp
 
+<img width="800" height="437" alt="scrn" src="https://github.com/user-attachments/assets/7ac30160-b807-4b86-baff-7aa3feb6ae2a" />
+
+
 This is my solution to the [Typing Speed Test challenge on Frontend Mentor](https://www.frontendmentor.io/challenges/typing-speed-test), with HTML, CSS and vanilla JavaScript.
 The user can choose the difficulty level from Easy, Medium and Hard. Also, the test timeframe can be selected from Timed (60 seconds) or Passage (no limit). The realtime results show Word-Per-Minute, Accuracy and Time. When the first typing test is finished, the current result is stored as a Personal Best in the local storage. If the subsequent test result exceeds the current Personal Best, the stored Personal Best is updated. The relevant modal screen will be displayed to encourage users to keep trying.
+<img width="800" height="511" alt="scrn2" src="https://github.com/user-attachments/assets/b786958f-443f-4c9b-9fed-a74a2989d7f2" />
+
 
 
 ### The requirements
