@@ -237,13 +237,13 @@ function clearResults() {
 
 startBtn.addEventListener("click", ready);
 
-btnText.addEventListener('click', (e) => {
+btnText.addEventListener("click", (e) => {
   if (e.target !== startBtn) {
     ready();
     addHide(startBtn);
     addHide(startBtn.nextElementSibling);
   }
-})
+});
 
 //  === accuracy check & results===
 const resultsBtn = document.querySelector("#results-btn");
@@ -253,9 +253,6 @@ const typingSection = document.querySelector(".section__typing");
 let totalCorrect = 0;
 
 inputContainer.addEventListener("input", () => {
-  console.log(passage);
-  console.log(stoppedPassage);
-  console.log(timed);
   resultsAccuracy.innerHTML = "";
   resultsWpm.innerHTML = "";
   resultsChar.innerHTML = "";
@@ -374,7 +371,6 @@ againBtn.addEventListener("click", () => {
   clearInput();
   fetchData();
   clearTimer();
-  // timerMode();
   clearAccuracy();
   clearWpm();
   removeHide(hr);
@@ -387,8 +383,6 @@ againBtn.addEventListener("click", () => {
   inputContainer.value = "";
   typingStartTime = Date.now();
   typingEndTime = "";
-  // stopped = true;
-  // stoppedPassage = true;
   removeConfetti();
 });
 
